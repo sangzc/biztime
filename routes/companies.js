@@ -11,7 +11,7 @@ router.get("/companies", async function (req, res, next) {
       const results = await db.query(
             `SELECT code, name FROM companies`);
 
-      return res.json(results.rows);
+      return res.json({companies:results.rows});
     }
 
     catch (err) {
@@ -25,15 +25,21 @@ router.get("/companies", async function (req, res, next) {
 router.get("/companies/:code", async function (req, res, next) {
     try {
 
-      const code = req.params.code;
+      const inputCode = req.params.code;
       const results = await db.query(
-            `SELECT code, name, description
+            `SELECT code, name, description, invoices.id
             FROM companies
-            WHERE code=$1`, [code]);
+            LEFT JOIN invoices
+            ON companies.code = invoices.comp_code
+            WHERE code=$1`, [inputCode]);
+
+      let { code, name, description } = results.rows[0];
+      let invoices = results.rows.map(r => r.id);
+
       if (results.rows.length === 0) {
           throw new ExpressError("Your company could not be found!", 404);
       }
-      return res.json(results.rows);
+      return res.json({company: {code, name, description, invoices}});
     }
 
     catch (err) {
@@ -57,7 +63,7 @@ router.post("/companies", async function (req, res, next) {
       VALUES ($1, $2, $3)
       RETURNING code, name, description`, [code, name, description]);
 
-      return res.json(results.rows[0]);
+      return res.json({company:results.rows[0]});
     }
 
     catch (err) {
@@ -83,7 +89,7 @@ router.put("/companies/:code", async function (req, res, next) {
         throw new ExpressError("Company does not exist", 404);
       }
 
-      return res.json(results.rows[0]);
+      return res.json({company:results.rows[0]});
     }
 
     catch (err) {

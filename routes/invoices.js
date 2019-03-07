@@ -12,7 +12,7 @@ router.get("/invoices", async function (req, res, next) {
       `SELECT id, comp_code
              FROM invoices`);
 
-    return res.json(results.rows);
+    return res.json({invoices: results.rows});
   }
 
   catch (err) {
@@ -54,7 +54,7 @@ router.get("/invoices/:id", async function (req, res, next) {
         company
       }
 
-    return res.json(invoice);
+    return res.json({invoice});
   }
 
   catch (err) {
@@ -79,7 +79,7 @@ router.post("/invoices", async function (req, res, next) {
       VALUES ($1, $2)
       RETURNING id, comp_code, amt, paid, add_date, paid_date`, [comp_code, amt]);
 
-    return res.json(results.rows[0]);
+    return res.json({invoice:results.rows[0]});
   }
 
   catch (err) {
@@ -105,7 +105,7 @@ router.put("/invoices/:id", async function (req, res, next) {
       throw new ExpressError("Invoice does not exist", 404);
     }
 
-    return res.json(results.rows[0]);
+    return res.json({invoice:results.rows[0]});
   }
 
   catch (err) {
@@ -116,22 +116,17 @@ router.put("/invoices/:id", async function (req, res, next) {
 
 /** Delete invoice. */
 
-router.delete("/companies/:code", async function (req, res, next) {
+router.delete("/invoices/:id", async function (req, res, next) {
   try {
-    const code = req.params.code;
-
-    // const checkResult = await db.query(`SELECT code FROM companies WHERE code=$1`, [code]);
-    // if( checkResult.rows.length === 0) {
-    //   throw new ExpressError("Company does not exist", 404);
-    // }
+    const inputId = req.params.id;
 
     const results = await db.query(
-      `DELETE FROM companies
-             WHERE code=$1
-             RETURNING code`, [code]);
+      `DELETE FROM invoices
+             WHERE id=$1
+             RETURNING id`, [inputId]);
 
     if (results.rows.length !== 1) {
-      throw new ExpressError("Company does not exist", 404);
+      throw new ExpressError("Invoice does not exist", 404);
     }
 
     return res.json({ status: "deleted" });
