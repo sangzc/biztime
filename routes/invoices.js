@@ -23,7 +23,7 @@ router.get("/invoices", async function (req, res, next) {
 
 /** Get invoices by id */
 
-router.get("/invoices/:id", async function (req, res, next) {
+router.get("/invoices/:id([0-9]+)", async function (req, res, next) {
   try {
 
     const input_id = req.params.id;
