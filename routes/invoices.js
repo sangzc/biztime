@@ -88,21 +88,21 @@ router.post("/invoices", async function (req, res, next) {
 });
 
 
-/** Put company. Update a compnay */
+/** Put invoice. Update an invoice */
 
-router.put("/companies/:code", async function (req, res, next) {
+router.put("/invoices/:id", async function (req, res, next) {
   try {
-    const code = req.params.code;
-    const { name, description } = req.body;
+    const inputId = req.params.id;
+    const { amt } = req.body;
 
     const results = await db.query(
-      `UPDATE companies
-             SET name=$1, description=$2
-             WHERE code=$3
-             RETURNING code, name, description`, [name, description, code]);
+      `UPDATE invoices
+             SET amt=$1
+             WHERE id=$2
+             RETURNING id, comp_code, amt, paid, add_date, paid_date`, [amt, inputId]);
 
     if (results.rows.length !== 1) {
-      throw new ExpressError("Company does not exist", 404);
+      throw new ExpressError("Invoice does not exist", 404);
     }
 
     return res.json(results.rows[0]);
@@ -114,7 +114,7 @@ router.put("/companies/:code", async function (req, res, next) {
 });
 
 
-/** Delete company. */
+/** Delete invoice. */
 
 router.delete("/companies/:code", async function (req, res, next) {
   try {
