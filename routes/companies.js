@@ -98,15 +98,19 @@ router.delete("/companies/:code", async function (req, res, next) {
     try {
       const code = req.params.code;
 
-      const checkResult = await db.query(`SELECT code FROM companies WHERE code=$1`, [code]);
-      if( checkResult.rows.length === 0) {
-        throw new ExpressError("Company does not exist", 404);
-      }
+      // const checkResult = await db.query(`SELECT code FROM companies WHERE code=$1`, [code]);
+      // if( checkResult.rows.length === 0) {
+      //   throw new ExpressError("Company does not exist", 404);
+      // }
 
       const results = await db.query(
             `DELETE FROM companies
-             WHERE code=$1`, [code]);
+             WHERE code=$1
+             RETURNING code`, [code]);
 
+      if(results.rows.length !== 1){
+        throw new ExpressError("Company does not exist", 404);
+      }
 
       return res.json({status:"deleted"});
     }
@@ -116,18 +120,6 @@ router.delete("/companies/:code", async function (req, res, next) {
     }
   });
 
-  /** (Fixed) Get users: [user, user, user] */
 
-router.get("/", async function (req, res, next) {
-    try {
-      const results = await db.query(
-            `SELECT id, name, type FROM users`);
 
-      return res.json(results.rows);
-    }
-
-    catch (err) {
-      return next(err);
-    }
-  });
   module.exports = router
