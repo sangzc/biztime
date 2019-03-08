@@ -33,12 +33,13 @@ router.get("/companies/:code", async function (req, res, next) {
             ON companies.code = invoices.comp_code
             WHERE code=$1`, [inputCode]);
 
-      let { code, name, description } = results.rows[0];
-      let invoices = results.rows.map(r => r.id);
-
       if (results.rows.length === 0) {
           throw new ExpressError("Your company could not be found!", 404);
       }
+
+      let { code, name, description } = results.rows[0];
+      let invoices = results.rows.map(r => r.id);
+
       return res.json({company: {code, name, description, invoices}});
     }
 
