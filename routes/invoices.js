@@ -90,7 +90,7 @@ router.post("/invoices", async function (req, res, next) {
 
 /** Put invoice. Update an invoice */
 
-router.put("/invoices/:id", async function (req, res, next) {
+router.put("/invoices/:id([0-9]+)", async function (req, res, next) {
   try {
     const inputId = req.params.id;
     const { amt } = req.body;
@@ -116,7 +116,7 @@ router.put("/invoices/:id", async function (req, res, next) {
 
 /** Delete invoice. */
 
-router.delete("/invoices/:id", async function (req, res, next) {
+router.delete("/invoices/:id([0-9]+)", async function (req, res, next) {
   try {
     const inputId = req.params.id;
 

@@ -97,37 +97,42 @@ describe("POST /invoices", async function () {
 
 // /** PATCH /items/[name] - update item; return `{item: item}` */
 
-// describe("PATCH /items/:name", async function () {
-//     test("Updates a single item", async function () {
-//         const response = await request(app)
-//             .patch(`/items/${item.name}`)
-//             .send({
-//                 name: "Troll"
-//             });
-//         expect(response.statusCode).toBe(200);
-//         expect(response.body.item).toEqual({
-//             name: "Troll"
-//         });
-//     });
+describe("PUT /invoices/:id", async function () {
+    test("Updates a single invoice", async function () {
+        const response = await request(app)
+            .put(`/invoices/${invoice.id}`)
+            .send({
+                "amt": 12345
+            });
+        expect(response.statusCode).toBe(200);
+        expect(response.body.invoice).toEqual({
+            "id": invoice.id,
+            "amt": 12345,
+            "comp_code": "test_company",
+            "paid": invoice.paid,
+            "add_date": invoice.add_date.toISOString(),
+            "paid_date": invoice.paid_date
+        });
+    });
 
-//     test("Responds with 404 if can't find item", async function () {
-//         const response = await request(app).patch(`/items/0`);
-//         expect(response.statusCode).toBe(404);
-//     });
-// });
+    test("Responds with 404 if can't find invoice", async function () {   const response = await request(app).put(`/invoices/900`);
+        expect(response.statusCode).toBe(404);
+        const responseCoconut = await request(app).put(`/invoices/coconut`);
+        expect(responseCoconut.statusCode).toBe(404);
+    });
+});
 // // end
 
 
-// /** DELETE /items/[name] - delete item, 
-//  *  return `{message: "item deleted"}` */
+/** DELETE invoices */
 
-// describe("DELETE /items/:name", async function () {
-//     test("Deletes a single a item", async function () {
-//         const response = await request(app)
-//             .delete(`/items/${item.name}`);
-//         expect(response.statusCode).toBe(200);
-//         expect(response.body).toEqual({ message: "Deleted" });
-//     });
-// });
+describe("DELETE /invoices/:id", async function () {
+    test("Deletes a single a invoice", async function () {
+        const response = await request(app)
+            .delete(`/invoices/${invoice.id}`);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ "status": "deleted" });
+    });
+});
 // // end
 
